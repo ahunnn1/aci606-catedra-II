@@ -7,7 +7,7 @@ from sqlalchemy import create_engine, text
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://appuser:rescue123@db:5432/appdb",
+    "postgresql://appuser:rescue123@db:5432/appdb"
 )
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
