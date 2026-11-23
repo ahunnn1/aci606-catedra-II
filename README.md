@@ -1,25 +1,57 @@
 # ACI606 - Docker Rescue Challenge
 
-Este repositorio contiene una aplicación web multi-servicio que debe ejecutarse mediante Docker Compose.
+Aplicación web multi-servicio recuperada y ejecutable con Docker Compose.
 
-## Arquitectura general
+## Arquitectura
 
-Frontend (Nginx) -> Backend/API (FastAPI) -> Database (PostgreSQL)
+Frontend (Nginx, :80) -> Backend (FastAPI, :8000) -> Base de datos (PostgreSQL 16)
 
-## Situación inicial
+- Solo el frontend se publica al host: `http://localhost:8080`.
+- El frontend reenvía `/api/*` al servicio `backend`; el backend se conecta a `db`.
+- Los datos de PostgreSQL persisten en el volumen nombrado `pgdata`.
+- El servicio `db` tiene un healthcheck (`pg_isready`) y el backend espera a que esté sano.
 
-El sistema fue recibido desde un equipo anterior y presenta múltiples problemas de construcción, configuración, comunicación y operación. No se informa la cantidad total de fallas ni su ubicación.
+## Requisitos
 
-Su trabajo consiste en diagnosticar el sistema utilizando evidencia técnica, reparar las incidencias identificadas y demostrar que la solución final puede ejecutarse de forma reproducible.
+Docker y Docker Compose v2.
 
-## Inicio sugerido
+## Configuración
 
-```bash
+cp .env.ej .env
+
+Variables (con valores por defecto si no existe `.env`): `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `FRONTEND_PORT`.
+
+## Iniciar
+
 docker compose up --build -d
-docker compose ps
-docker compose logs
-```
 
-No reemplace la aplicación por un proyecto nuevo. Trabaje sobre los archivos suministrados y documente cada modificación en el informe técnico y mediante el historial del repositorio.
-"# aci-catedra-II" 
-"# aci606-catedra-II" 
+## Verificar
+
+docker compose ps
+curl -s http://localhost:8080/api/health
+curl -s -X POST http://localhost:8080/api/items -H "Content-Type: application/json" -d '{"name":"prueba"}'
+curl -s http://localhost:8080/api/items
+
+Respuesta esperada de salud: {"status":"ok","database":"reachable"}
+
+## Logs y diagnóstico
+
+docker compose logs <frontend|backend|db>
+docker compose config
+docker inspect <contenedor>
+
+## Detener
+
+docker compose down        # conserva los datos
+docker compose down -v     # elimina también el volumen (borra los datos)
+
+## Recrear
+
+docker compose down
+docker compose up --build -d
+
+Los datos persisten tras `down` + `up` gracias al volumen `pgdata`.
+
+## Reparaciones
+
+El detalle de cada incidencia (R-01 a R-07) está en el informe técnico y en el historial de commits.
