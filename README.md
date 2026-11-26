@@ -17,7 +17,7 @@ Docker y Docker Compose v2.
 
 ## Configuración
 
-cp .env.ej .env
+mv .env.ej .env
 
 Variables (con valores por defecto si no existe `.env`): `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `FRONTEND_PORT`.
 
